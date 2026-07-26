@@ -19,7 +19,7 @@
       "me.datsuns.everlight.fabric.EverLightFabricClient"
     ],
     "modmenu": [
-      "me.datsuns.everlight.fabric.EverLightModMenu"
+      "me.datsuns.everlight.fabric.EverLightModMenu::createModMenuApi"
     ]
   },
   "mixins": [
