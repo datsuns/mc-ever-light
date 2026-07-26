@@ -1,0 +1,84 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    mods {
+        "${project.mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    implementation project(':common')
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    def version = project.version
+    def minecraft_version = project.minecraft_version
+    def loader_version = project.loader_version
+    def mod_id = project.mod_id
+    def mod_name = project.mod_name
+    def mod_authors = project.mod_authors
+    def mod_license = project.mod_license
+    def mod_description = project.mod_description
+    def mod_homepage = project.mod_homepage
+    def mod_sources = project.mod_sources
+    inputs.property "version", version
+    inputs.property "minecraft_version", minecraft_version
+    inputs.property "loader_version", loader_version
+    inputs.property "mod_id", mod_id
+    inputs.property "mod_name", mod_name
+    inputs.property "mod_authors", mod_authors
+    inputs.property "mod_license", mod_license
+    inputs.property "mod_description", mod_description
+    inputs.property "mod_homepage", mod_homepage
+    inputs.property "mod_sources", mod_sources
+
+    filesMatching(["fabric.mod.json", "assets/mc_ever_light/lang/en_us.json"]) {
+        expand "version": version,
+                "mod_version": version,
+                "minecraft_version": minecraft_version,
+                "loader_version": loader_version,
+                "mod_id": mod_id,
+                "mod_name": mod_name,
+                "mod_authors": mod_authors,
+                "mod_license": mod_license,
+                "mod_description": mod_description,
+                "mod_homepage": mod_homepage,
+                "mod_sources": mod_sources
+    }
+}
+
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(":common:classes")
+    from(project(":common").sourceSets.main.output.classesDirs)
+    archiveFileName.set("${project.archives_base_name}-${project.version}-fabric-mc${project.minecraft_version}.jar")
+}

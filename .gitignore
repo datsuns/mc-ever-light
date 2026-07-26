@@ -1,0 +1,26 @@
+# Gradle & Build outputs
+.gradle/
+build/
+*/build/
+out/
+*/out/
+bin/
+*/bin/
+
+# Minecraft Run Directories
+run/
+*/run/
+screenshots/
+crash-reports/
+logs/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db

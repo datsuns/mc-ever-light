@@ -1,0 +1,18 @@
+{
+  "minecraft_version": "26.2",
+  "java_version": "25",
+  "platforms": {
+    "fabric": {
+      "loader_version": "0.19.3",
+      "api_version": "0.155.2+26.2",
+      "mapping_type": "mojang"
+    },
+    "neoforge": {
+      "version": "26.2.0.32-beta",
+      "mapping_type": "mojang"
+    },
+    "paper": {
+      "api_version": "26.2-R0.1-SNAPSHOT"
+    }
+  }
+}

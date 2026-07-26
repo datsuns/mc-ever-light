@@ -1,0 +1,103 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version "${neoforge_moddev_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = "${project.archives_base_name}-neoforge"
+}
+
+java {
+    withSourcesJar()
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+    testImplementation.extendsFrom implementation
+}
+
+dependencies {
+    implementation project(':common')
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def copyCommonClasses = tasks.register("copyCommonClasses", Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(":common:classes")
+    from(project(":common").sourceSets.main.output.classesDirs)
+    into(layout.buildDirectory.dir("classes/java/main").get().asFile)
+}
+
+tasks.named("compileJava").configure {
+    dependsOn(copyCommonClasses)
+}
+
+tasks.named("classes").configure {
+    dependsOn(copyCommonClasses)
+}
+
+neoForge {
+    version = project.neo_version
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'fml.earlyWindowControl', 'false'
+            systemProperty 'fml.earlyWindowProvider', 'none'
+        }
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+    }
+
+    mods {
+        "${project.mod_id}" {
+            sourceSet(sourceSets.main)
+            sourceSet(sourceSets.test)
+        }
+    }
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : project.minecraft_version,
+            minecraft_version_range: project.minecraft_version_range,
+            neo_version            : project.neo_version,
+            neo_version_range      : project.neo_version_range,
+            loader_version_range   : project.loader_version_range,
+            mod_id                 : project.mod_id,
+            mod_name               : project.mod_name,
+            mod_license            : project.mod_license,
+            mod_version            : project.mod_version,
+            mod_authors            : project.mod_authors,
+            mod_description        : project.mod_description,
+            mod_homepage           : project.mod_homepage,
+            mod_sources            : project.mod_sources
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml', 'assets/mc_ever_light/lang/en_us.json']) {
+        expand replaceProperties
+    }
+}
+
+tasks.named("jar").configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveFileName.set("${project.archives_base_name}-${project.version}-neoforge-mc${project.minecraft_version}.jar")
+}
