@@ -36,6 +36,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.0' }}
           name: EverLight ${{ github.ref_name }}
           body_path: release_changelog.md
           files: |
