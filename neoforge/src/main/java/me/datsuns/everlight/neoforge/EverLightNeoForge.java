@@ -56,17 +56,39 @@ public class EverLightNeoForge {
         if (toggleKey != null && toggleKey.consumeClick()) {
             boolean state = EverLightCommon.toggle();
             EverLightConfig.save();
-
-            if (state) {
-                mc.player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, MobEffectInstance.INFINITE_DURATION, 0, false, false, false));
-            } else {
-                mc.player.removeEffect(MobEffects.NIGHT_VISION);
-            }
+            applyBrightness(mc, state);
 
             String message = state ? "§a[EverLight] ON" : "§c[EverLight] OFF";
             mc.player.sendSystemMessage(Component.literal(message));
-        } else if (EverLightCommon.isEnabled() && !mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
-            mc.player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, MobEffectInstance.INFINITE_DURATION, 0, false, false, false));
+        } else if (EverLightCommon.isEnabled()) {
+            applyBrightness(mc, true);
+        } else if (!EverLightCommon.isEnabled() && mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
+            mc.player.removeEffect(MobEffects.NIGHT_VISION);
+        }
+    }
+
+    public static void applyBrightness(Minecraft mc, boolean enabled) {
+        if (mc.player == null) return;
+
+        if (!enabled) {
+            if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
+                mc.player.removeEffect(MobEffects.NIGHT_VISION);
+            }
+            return;
+        }
+
+        double maxGamma = EverLightCommon.getMaxGamma(); // 1.0 ~ 10.0
+        double targetGamma = (maxGamma - 1.0) / 9.0;
+        mc.options.gamma().set(targetGamma);
+
+        if (maxGamma >= 3.0) {
+            if (!mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
+                mc.player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, MobEffectInstance.INFINITE_DURATION, 0, false, false, false));
+            }
+        } else {
+            if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
+                mc.player.removeEffect(MobEffects.NIGHT_VISION);
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package me.datsuns.everlight.fabric.gui;
 
 import me.datsuns.everlight.EverLightCommon;
 import me.datsuns.everlight.EverLightConfig;
+import me.datsuns.everlight.fabric.mixin.MinecraftMixin;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -39,6 +41,8 @@ public class EverLightConfigScreen extends Screen {
                 if (val >= 1.0 && val <= 10.0) {
                     this.currentMaxGamma = val;
                     this.slider.setValueDirect((val - 1.0) / 9.0);
+                    EverLightCommon.setMaxGamma(this.currentMaxGamma);
+                    MinecraftMixin.applyBrightness(Minecraft.getInstance(), EverLightCommon.isEnabled());
                 }
             } catch (NumberFormatException ignored) {
             }
@@ -48,6 +52,7 @@ public class EverLightConfigScreen extends Screen {
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
             EverLightCommon.setMaxGamma(this.currentMaxGamma);
             EverLightConfig.save();
+            MinecraftMixin.applyBrightness(Minecraft.getInstance(), EverLightCommon.isEnabled());
             this.onClose();
         }).bounds(centerX - 100, centerY + 40, 95, 20).build());
 
@@ -88,6 +93,8 @@ public class EverLightConfigScreen extends Screen {
                     numberInput.setValue(str);
                 }
             }
+            EverLightCommon.setMaxGamma(currentMaxGamma);
+            MinecraftMixin.applyBrightness(Minecraft.getInstance(), EverLightCommon.isEnabled());
         }
     }
 }
