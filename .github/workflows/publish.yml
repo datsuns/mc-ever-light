@@ -28,9 +28,9 @@ jobs:
         run: ./gradlew build
 
       - name: Publish to Modrinth
-        if: ${{ secrets.MODRINTH_TOKEN != '' }}
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        if: ${{ env.MODRINTH_TOKEN != '' }}
         run: ./gradlew :neoforge:modrinth :fabric:modrinth
 
       - name: Create GitHub Release
