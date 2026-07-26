@@ -89,15 +89,17 @@ jar {
     archiveFileName.set("${project.archives_base_name}-${project.version}-fabric-mc${project.minecraft_version}.jar")
 }
 
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = project.hasProperty("modrinth_id") ? project.modrinth_id : "everlight"
-    versionNumber = "${project.version}-fabric-mc${project.minecraft_version}"
-    versionName = "EverLight ${project.version} (Fabric 1.21.4)"
-    uploadFile = tasks.named("jar")
-    gameVersions = [project.minecraft_version]
-    loaders = ["fabric"]
-    if (rootProject.file("release_changelog.md").exists()) {
-        changelog = rootProject.file("release_changelog.md").text
+if (System.getenv("MODRINTH_TOKEN") != null && !System.getenv("MODRINTH_TOKEN").isEmpty()) {
+    modrinth {
+        token = System.getenv("MODRINTH_TOKEN")
+        projectId = project.hasProperty("modrinth_id") ? project.modrinth_id : "uIOnStsQ"
+        versionNumber = "${project.version}-fabric-mc${project.minecraft_version}"
+        versionName = "EverLight ${project.version} (Fabric 1.21.4)"
+        uploadFile = tasks.named("jar")
+        gameVersions = [project.minecraft_version]
+        loaders = ["fabric"]
+        if (rootProject.file("release_changelog.md").exists()) {
+            changelog = rootProject.file("release_changelog.md").text
+        }
     }
 }

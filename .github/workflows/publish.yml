@@ -1,76 +1,45 @@
-name: Publish to Modrinth
+name: Publish Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_type:
-        description: 'Release type on Modrinth (release, beta, alpha)'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-          - release
-          - beta
-          - alpha
-      loader:
-        description: 'Target loader to publish (all, fabric, or neoforge separately)'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - fabric
-          - neoforge
-      dry_run:
-        description: 'Dry Run (Verify build and API payload without actually uploading)'
-        required: true
-        default: false
-        type: boolean
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   publish:
-    name: Build and Publish to Modrinth
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 25
+      - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
+          distribution: 'oracle'
           java-version: '25'
-          distribution: 'temurin'
+          cache: 'gradle'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Build Mod JARs
+        run: ./gradlew build
+
+      - name: Publish to Modrinth
+        if: ${{ secrets.MODRINTH_TOKEN != '' }}
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: ./gradlew :neoforge:modrinth :fabric:modrinth
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          python-version: '3.11'
-
-      - name: Install Python Dependencies
-        run: pip install requests
-
-      - name: Make Gradle Wrapper Executable
-        run: sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
-
-      - name: Build and Publish to Modrinth (Dry Run)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}
+          name: EverLight ${{ github.ref_name }}
+          body_path: release_changelog.md
+          files: |
+            neoforge/build/libs/*.jar
+            fabric/build/libs/*.jar
         env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        run: |
-          ./gradlew publishModrinth -PdryRun -PreleaseType=${{ inputs.release_type }} -Ploader=${{ inputs.loader || 'all' }}
-
-      - name: Build and Publish to Modrinth (Live)
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run == true) }}
-        env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        run: |
-          ./gradlew publishModrinth -PreleaseType=${{ inputs.release_type || 'release' }} -Ploader=${{ inputs.loader || 'all' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
