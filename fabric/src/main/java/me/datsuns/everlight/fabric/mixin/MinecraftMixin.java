@@ -2,10 +2,10 @@ package me.datsuns.everlight.fabric.mixin;
 
 import me.datsuns.everlight.EverLightCommon;
 import me.datsuns.everlight.EverLightConfig;
+import me.datsuns.everlight.fabric.EverLightFabricClient;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +27,7 @@ public class MinecraftMixin {
         if (isPressed && !lastKeyPressed) {
             boolean state = EverLightCommon.toggle();
             EverLightConfig.save();
-            applyBrightness(mc, state);
+            EverLightFabricClient.applyBrightness(mc, state);
 
             String message = state ? "§a[EverLight] ON" : "§c[EverLight] OFF";
             mc.player.sendSystemMessage(Component.literal(message));
@@ -35,34 +35,9 @@ public class MinecraftMixin {
         lastKeyPressed = isPressed;
 
         if (EverLightCommon.isEnabled()) {
-            applyBrightness(mc, true);
+            EverLightFabricClient.applyBrightness(mc, true);
         } else if (!EverLightCommon.isEnabled() && mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
             mc.player.removeEffect(MobEffects.NIGHT_VISION);
-        }
-    }
-
-    public static void applyBrightness(Minecraft mc, boolean enabled) {
-        if (mc.player == null) return;
-
-        if (!enabled) {
-            if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
-                mc.player.removeEffect(MobEffects.NIGHT_VISION);
-            }
-            return;
-        }
-
-        double maxGamma = EverLightCommon.getMaxGamma(); // 1.0 ~ 10.0
-        double targetGamma = (maxGamma - 1.0) / 9.0;
-        mc.options.gamma().set(targetGamma);
-
-        if (maxGamma >= 3.0) {
-            if (!mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
-                mc.player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, MobEffectInstance.INFINITE_DURATION, 0, false, false, false));
-            }
-        } else {
-            if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
-                mc.player.removeEffect(MobEffects.NIGHT_VISION);
-            }
         }
     }
 }
