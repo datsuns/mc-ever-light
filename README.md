@@ -15,7 +15,6 @@
 ## ✨ Features
 
 - 💡 **Instant Fullbright Toggle**: Toggle full daylight visibility in caves, underwater, and night with a single keypress.
-- 🧘 **Clean & Invisible**: No potion particle effects, no HUD buff status icons, and no screen flash clutter.
 - 🎚️ **Customizable Brightness Level (1.0 - 10.0)**:
   - Interactive **Slider + Numeric Input Box** configuration GUI.
   - Adjust brightness dynamically from subtle enhancement to full illumination.
@@ -41,25 +40,6 @@ EverLight features a bi-directionally synchronized **Slider + Numeric Input Box*
 - Move the slider to update the numeric value in real time.
 - Type any precise number between `1.0` and `10.0` to set the slider position automatically.
 - Changes are applied live in game and saved upon pressing **Done**.
-
----
-
-## 🛠️ Building from Source
-
-This project uses a multi-module Gradle structure powered by Java 25.
-
-```bash
-# Clone the repository
-git clone https://github.com/datsuns/mc-ever-light.git
-cd mc-ever-light
-
-# Build all modules (Common, NeoForge, Fabric)
-./gradlew build
-```
-
-Compiled mod JAR files will be generated in:
-- `neoforge/build/libs/mc-ever-light-1.0.0-neoforge-mc1.21.4.jar`
-- `fabric/build/libs/mc-ever-light-1.0.0-fabric-mc1.21.4.jar`
 
 ---
 
