@@ -17,6 +17,9 @@
   "entrypoints": {
     "client": [
       "me.datsuns.everlight.fabric.EverLightFabricClient"
+    ],
+    "modmenu": [
+      "me.datsuns.everlight.fabric.EverLightModMenu"
     ]
   },
   "mixins": [

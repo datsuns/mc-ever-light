@@ -2,6 +2,7 @@ package me.datsuns.everlight.neoforge;
 
 import me.datsuns.everlight.EverLightCommon;
 import me.datsuns.everlight.EverLightConfig;
+import me.datsuns.everlight.neoforge.gui.EverLightConfigScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -16,6 +17,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
 
@@ -27,6 +29,10 @@ public class EverLightNeoForge {
         EverLightConfig.init(FMLPaths.CONFIGDIR.get());
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::onRegisterKeyMappings);
+
+        // NeoForge 組み込み Mod List の 「設定/Config」 ボタンへ登録
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, screen) -> new EverLightConfigScreen(screen));
+
         NeoForge.EVENT_BUS.register(this);
     }
 

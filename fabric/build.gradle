@@ -18,6 +18,10 @@ loom {
     }
 }
 
+repositories {
+    maven { url "https://maven.terraformersmc.com/releases/" }
+}
+
 dependencies {
     implementation project(':common')
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
