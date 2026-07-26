@@ -24,10 +24,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build and Publish to Modrinth
+      - name: Build Mod JARs
+        run: ./gradlew build
+
+      - name: Publish to Modrinth
+        if: ${{ secrets.MODRINTH_TOKEN != '' }}
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        run: ./gradlew build modrinth
+        run: ./gradlew modrinth
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
