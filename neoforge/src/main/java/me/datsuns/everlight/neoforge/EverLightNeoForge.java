@@ -3,6 +3,7 @@ package me.datsuns.everlight.neoforge;
 import me.datsuns.everlight.EverLightCommon;
 import me.datsuns.everlight.EverLightConfig;
 import me.datsuns.everlight.neoforge.gui.EverLightConfigScreen;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -19,7 +20,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
-import org.lwjgl.glfw.GLFW;
 
 @Mod(value = EverLightCommon.MOD_ID, dist = Dist.CLIENT)
 public class EverLightNeoForge {
@@ -42,7 +42,7 @@ public class EverLightNeoForge {
     private void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         toggleKey = new KeyMapping(
                 "key.mc_ever_light.toggle",
-                GLFW.GLFW_KEY_G,
+                InputConstants.KEY_G,
                 KeyMapping.Category.MISC
         );
         event.register(toggleKey);

@@ -1,7 +1,7 @@
 # Mod Specification - EverLight
 
 - **Platform**: Fabric, NeoForge
-- **Minecraft Version**: 26.2
+- **Minecraft Version**: 26.3
 - **Mod Name**: EverLight
 - **Mod ID**: `mc_ever_light`
 - **Package**: `me.datsuns.everlight`

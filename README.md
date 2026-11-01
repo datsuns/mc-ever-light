@@ -1,12 +1,12 @@
 # EverLight
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4%20(26.2)-brightgreen.svg)](https://minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-26.3-brightgreen.svg)](https://minecraft.net/)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
-[![NeoForge](https://img.shields.io/badge/NeoForge-26.2-blue.svg)](https://neoforged.net/)
-[![Fabric](https://img.shields.io/badge/Fabric-1.21.4-purple.svg)](https://fabricmc.net/)
+[![NeoForge](https://img.shields.io/badge/NeoForge-26.3-blue.svg)](https://neoforged.net/)
+[![Fabric](https://img.shields.io/badge/Fabric-26.3-purple.svg)](https://fabricmc.net/)
 [![Language](https://img.shields.io/badge/Language-English%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E-informational.svg)](README.ja.md)
 
-**EverLight** is a clean, lightweight, and customizable Fullbright / Night Vision mod for Minecraft **1.21.4 (26.2)**, supporting both **NeoForge** and **Fabric** mod loaders.
+**EverLight** is a clean, lightweight, and customizable Fullbright / Night Vision mod for Minecraft **26.3**, supporting both **NeoForge** and **Fabric** mod loaders.
 
 [日本語ドキュメントはこちら (README.ja.md)](README.ja.md)
 

@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffects;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +21,7 @@ public class MinecraftMixin {
         Minecraft mc = (Minecraft) (Object) this;
         if (mc.player == null) return;
 
-        boolean isPressed = InputConstants.isKeyDown(mc.getWindow(), GLFW.GLFW_KEY_G);
+        boolean isPressed = InputConstants.isKeyDown(InputConstants.KEY_G);
 
         if (isPressed && !lastKeyPressed) {
             boolean state = EverLightCommon.toggle();

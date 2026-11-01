@@ -1,12 +1,12 @@
 # EverLight (エバーライト)
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4%20(26.2)-brightgreen.svg)](https://minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-26.3-brightgreen.svg)](https://minecraft.net/)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
-[![NeoForge](https://img.shields.io/badge/NeoForge-26.2-blue.svg)](https://neoforged.net/)
-[![Fabric](https://img.shields.io/badge/Fabric-1.21.4-purple.svg)](https://fabricmc.net/)
+[![NeoForge](https://img.shields.io/badge/NeoForge-26.3-blue.svg)](https://neoforged.net/)
+[![Fabric](https://img.shields.io/badge/Fabric-26.3-purple.svg)](https://fabricmc.net/)
 [![English Docs](https://img.shields.io/badge/Language-English%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E-informational.svg)](README.md)
 
-**EverLight** は、Minecraft **1.21.4 (26.2)** 向けの高機能・軽量マルチローダー（**NeoForge** & **Fabric** 対応）明暗調整・暗視（Fullbright）Mod です。
+**EverLight** は、Minecraft **26.3** 向けの高機能・軽量マルチローダー（**NeoForge** & **Fabric** 対応）明暗調整・暗視（Fullbright）Mod です。
 
 [Click here for English Documentation (README.md)](README.md)
 
