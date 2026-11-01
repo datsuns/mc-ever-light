@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-mc26.3] - 2026-11-01
+
+### 🇯🇵 日本語
+- Minecraft **26.3** への対応。
+- Minecraft 26.3 の `InputConstants.isKeyDown` 仕様変更への追従。
+- NeoForge 26.3 の新しい言語キー形式（`neoforge.screen.mods.info.description.*`）への移行およびアイコン設定（`iconFile`）の追加。
+
+### 🇬🇧 English
+- Added support for Minecraft **26.3**.
+- Adapted key input checking to Minecraft 26.3's `InputConstants.isKeyDown` API changes.
+- Updated NeoForge description translation key to `neoforge.screen.mods.info.description.*` and added `iconFile` metadata for 26.3 mod list compatibility.
+
+---
+
 ## [1.0.0] - 2026-07-26
 
 ### 🇯🇵 日本語

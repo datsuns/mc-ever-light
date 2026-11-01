@@ -1,10 +1,10 @@
-# EverLight v1.0.0 リリースノート / Release Notes
+# EverLight v1.0.0 (Minecraft 26.3) リリースノート / Release Notes
 
 ---
 
 ## 🇯🇵 日本語
 
-Minecraft **1.21.4 (26.2)** 向け **EverLight** v1.0.0 へようこそ！
+Minecraft **26.3** 向け **EverLight** v1.0.0 へようこそ！
 
 ### ✨ 主な機能・ハイライト
 
@@ -19,15 +19,15 @@ Minecraft **1.21.4 (26.2)** 向け **EverLight** v1.0.0 へようこそ！
 - 💾 **設定の自動永続化**: 変更した設定は `config/mc_ever_light.properties` へ自動保存されます。
 
 ### 📦 動作環境
-- **Minecraft バージョン**: 1.21.4 (26.2)
+- **Minecraft バージョン**: 26.3
 - **Java バージョン**: 25+
-- **対応 Mod Loader**: NeoForge (26.2.0+), Fabric (0.19.3+)
+- **対応 Mod Loader**: NeoForge (26.3.0+), Fabric (0.19.3+)
 
 ---
 
 ## 🇬🇧 English
 
-Welcome to the initial release of **EverLight** for Minecraft **1.21.4 (26.2)**!
+Welcome to the release of **EverLight** for Minecraft **26.3**!
 
 ### ✨ Highlights & Features
 
@@ -42,6 +42,6 @@ Welcome to the initial release of **EverLight** for Minecraft **1.21.4 (26.2)**!
 - 💾 **Persistent Configuration**: Settings are saved automatically to `config/mc_ever_light.properties`.
 
 ### 📦 Supported Environment
-- **Minecraft Version**: 1.21.4 (26.2)
+- **Minecraft Version**: 26.3
 - **Java Version**: 25+
-- **Loaders**: NeoForge (26.2.0+), Fabric (0.19.3+)
+- **Loaders**: NeoForge (26.3.0+), Fabric (0.19.3+)
