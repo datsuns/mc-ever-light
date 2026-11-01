@@ -23,12 +23,21 @@
   - 破壊したブロック数に応じてツールの耐久度を正しく消費させ、耐久度が0になる前に破壊を止めるセーフティガード（`itemStack.damage(...)` と破損判定）を実装。
 
 ### パターンB: HUDオーバーレイ・クライアント状態同期 (ステータス表示系)
-- **対象機能**: 満腹度・隠しパラメータ（隠しステータス、マナ等）の画面描画や情報表示。
+- **対象機能**: 満腹度・隠しパラメータ（隠しステータス、マナ、経過日数等）の画面描画や情報表示。
 - **差分同期パケット (Delta Sync Pattern)**:
   - 毎ティック全データを送信してネットワーク帯域を無駄にしないため、サーバー側で `Map<UUID, Value>` をキャッシュ。
   - **変更が検知された瞬間のみ**クライアントへ差分パケット（`SaturationSyncPacket` 等）を送信する設計にする。
-- **HUD描画 (RenderGameOverlay / HudRenderCallback)**:
-  - `HudRenderCallback.EVENT` や Mixin を用いてバニラのHUD描画に介入。
+- **最新HUD描画API仕様 (Minecraft 26.x / 近代化スタック)**:
+  - 従来の `DrawContext` / `GuiGraphics` 直接描画から、`GuiGraphicsExtractor` と `DeltaTracker` による描画ステート抽出方式へ移行。
+  - **Fabric (HudElementRegistry)**:
+    - `HudElement` インターフェースを実装し、`extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker)` をオーバーライド。
+    - クライアント初期化時に `HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(MOD_ID, "name"), new MyHudRenderer())` で登録。
+  - **NeoForge (RenderGuiEvent.Post)**:
+    - `NeoForge.EVENT_BUS.addListener` で `RenderGuiEvent.Post` を受信。
+    - `event.getGuiGraphics()` および `event.getPartialTick()` を受け渡して描画。
+  - **描画・座標計算の実装規約**:
+    - 画面サイズ取得: `Minecraft.getInstance().getWindow().getGuiScaledWidth()`, `getGuiScaledHeight()`。
+    - テキスト描画: `graphics.text(font, text, (int) posX, (int) posY, 0xFFFFFFFF, false)`。
   - **他Mod描画との互換性**: バニラの体力バーや満腹度バーの位置変更（他Modによる拡張）に動的に追従できるよう、固定座標（ハードコード）を避け、描画コンテキストのオフセット座標を参照する。
   - **イベントバス設計**: 自作Modの描画前後にカスタムイベントをパブリッシュすることで、他のHUD系Modが描画位置を調整できるようにする。
 

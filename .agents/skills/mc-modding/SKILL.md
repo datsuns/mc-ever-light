@@ -111,6 +111,15 @@ description: Assist in designing, generating, building, and debugging Minecraft 
       - ルートプロジェクトを Gradle 9.x 以上のマルチプロジェクトとして構成する場合は、NeoForge サブプロジェクトを必ず最新の **ModDevGradle** (`net.neoforged.moddev`) に移行してください。これにより、Fabric Loom と同じ Gradle 9.x 環境下で安全に共存可能になります。
     - **ProcessResources における UTF-8 エンコーディング設定**:
       - メタデータファイル（`neoforge.mods.toml` や `fabric.mod.json` 等）のテキスト展開処理（`expand` 等）時に、日本語などの非ASCII文字が文字化け（ISO-8859-1等へのフォールバック）するのを防ぐため、すべてのサブプロジェクトで `tasks.withType(ProcessResources).configureEach { filteringCharset = 'UTF-8' }` を設定してください。
+    - **NeoForge 26.2.50+ / 26.3 Mod 一覧画面刷新に伴う `iconFile` の必須指定と `logoFile` 廃止**:
+      - NeoForge 26.2.50-beta 以降、従来の `logoFile` は非推奨化されました（起動ログに `uses the deprecated logoFile property; change to bannerFile and/or iconFile` 警告が出力されます）。
+      - **重大な表示トラップ**: `logoFile` は右側詳細パネルの横長バナー (`bannerFile`) のフォールバックとしてしか扱われません。そのため、`logoFile` だけを指定していても、**左側の Mod 一覧リスト（24x24 正方形アイコン）は `null` となり、アイコン枠が空白**になります。
+      - 正方形アイコンを Mod 一覧に正しく表示するため、`neoforge.mods.toml` の `[[mods]]` ブロック内には必ず **`iconFile = "assets/${mod_id}/icon.png"`**（またはルート配置時の `iconFile = "icon.png"`）を明示的に定義してください。横長バナー画像が存在する場合のみ `bannerFile` を併用します。
+    - **外部依存ライブラリの `type="required"`（必須）定義と開発環境 (`runClient`) のオプショナル誤認トラップ**:
+      - Cloth Config 等のライブラリをコード内で無条件に参照・初期化（`AutoConfig.register(...)`, `implements ConfigData` 等）している場合、`neoforge.mods.toml` で `type="optional"`（あるいは `fabric.mod.json` で `recommends`）に設定してはなりません。
+      - **重大な落とし穴**: 開発環境（`runClient`）では Gradle の依存関係解決によりライブラリ JAR が自動的にクラスパスへ追加されるため、メタデータが `optional` であっても何事もなく正常に起動・動作してしまいます。
+      - しかし、本番・ランチャー環境でユーザーが単体 JAR だけを `mods/` に配置した際、ローダーが「前提 Mod 不足（Missing Dependency）」の案内画面を出さずにゲームを起動してしまい、クラスロード時や初期化時に `java.lang.NoClassDefFoundError` で予期せぬクラッシュを引き起こします。
+      - **設計原則**: コードが無条件にアクセスする外部 Mod は、メタデータ上も必ず **`type="required"`（Fabric では `depends`）** として宣言し、ローダーによる安全な前提 Mod チェック機構を働かせてください。
 4.  **コード生成・ボイラープレート配置時の注意点**:
     - **キーワード置換時のアノテーション破損トラップ**:
       テンプレートやコードの文字列置換で `"modid"` や `'modid'` を実際の Mod ID に置換する際、引用符のない単なる文字列 `modid` を置換対象に含めないでください。NeoForge の `@EventBusSubscriber(modid = MODID)` 等において、アノテーション引数名 `modid` までが誤って置換され、コンパイルエラーの原因となります。必ず引用符付き（`"modid"`, `'modid'`）を対象とするか、アノテーション引数名を保護する正規表現設計を行ってください。
@@ -122,6 +131,14 @@ description: Assist in designing, generating, building, and debugging Minecraft 
       - **NeoForge (Mojang公式マッピング)**: `ResourceLocation`
         - `net.minecraft.resources.ResourceLocation`
       誤ったパッケージやクラスをインポートすると、`cannot find symbol` エラーでコンパイルが失敗します。
+    - **Minecraft 26.3 入力バックエンド刷新（GLFW から SDL3 へのキーバインド移行対応）**:
+      - Minecraft 26.3 より、ウィンドウおよび入力管理バックエンドが LWJGL/GLFW から **SDL3** に移行されました。
+      - これに伴い、KeyMapping 等のキーバインド登録処理で従来の GLFW 定数および `KEYSYM` 型が変更となっています。
+      - **移行コードパターン**:
+        - `InputConstants.Type.KEYSYM` $\rightarrow$ `InputConstants.Type.KEYBOARD`
+        - `GLFW.GLFW_KEY_*`（例: `GLFW.GLFW_KEY_COMMA`） $\rightarrow$ `InputConstants.KEY_*`（例: `InputConstants.KEY_COMMA`）
+        - `org.lwjgl.glfw.GLFW` の直接 import を避け、Mojang の `net.minecraft.client.KeyMapping` および `com.mojang.blaze3d.platform.InputConstants` の定数・列挙型を利用して Fabric / NeoForge 共通で互換性を維持してください。
+
 
 ---
 
@@ -152,7 +169,20 @@ description: Assist in designing, generating, building, and debugging Minecraft 
 
 ### 4.1. リリース自動化と Modrinth パブリッシュ (REST API & Python)
 
-マルチローダー（Fabric + NeoForge）構成において、Modrinth 等のプラットフォームへリリース JAR をパブリッシュする際、Loom や Minotaur などの Gradle プラグインに直接依存すると、依存関係解決の不整合やクラスローダー競合によるビルドエラーを誘発しやすくなります。これを防ぐため、Gradle タスクから Python 仮想環境上の REST API 呼び出し用スクリプトを呼び出す設計を推奨します。また、リリース時には `release_changelog.md` などの更新履歴ファイルを自動参照させ、バージョンごとの変更点を一括登録します。
+マルチローダー（Fabric + NeoForge）構成において、Modrinth 等のプラットフォームへリリース JAR をパブリッシュする際、Loom や Minotaur などの Gradle プラグインに直接依存すると、依存関係解決の不整合やクラスローダー競合によるビルドエラーを誘発しやすくなります。これを防ぐため、Gradle タスクから Python スクリプト (`scripts/publish_modrinth.py`) を経由して Modrinth REST API (`POST https://api.modrinth.com/v2/version`) を呼び出す設計を標準とします。
+
+- **GitHub Actions ワークフロー (`.github/workflows/modrinth-publish.yml`) の標準仕様**:
+  - **二重トリガー設計**:
+    - `push: tags: ['v*']`: リリースタグプッシュ時に全自動でパブリッシュ。
+    - `workflow_dispatch`: GitHub Web UI 上から手動実行。入力パラメータとして `release_type` (`release`/`beta`/`alpha`)、`loader` (`all`/`fabric`/`neoforge`)、`dry_run` (boolean) を提供。
+  - **CI 実行環境**: `actions/setup-java@v4` (Java 25) + `gradle/actions/setup-gradle@v4` + `actions/setup-python@v5` (Python 3.11) + `pip install requests`。
+- **Python スクリプト (`publish_modrinth.py`) のフォールバックと堅牢設計**:
+  - **ローカル検証容易性（`requests` フォールバック）**: 開発者のローカルマシンに `requests` モジュールが未導入でも、`--dry-run` 時は外部通信を行わずローカルの JAR 検証とメタデータプレビューのみを実行できるように設計します（`try: import requests except ImportError: requests = None`）。
+  - **メタデータ自動同期**: `gradle.properties` から `mod_version`, `minecraft_version`, `archives_base_name`, `modrinth_project_id` を自動抽出し、Fabric API 依存（`P7dR8mSH`）などをローダー別に適切にペイロード化。
+  - **チェンジログ連携**: プロジェクトルートに `release_changelog.md` が存在する場合はその内容を自動適用。
+- **ルート `build.gradle` へのタスク定義**:
+  - `publishModrinth`, `publishModrinthFabric`, `publishModrinthNeoForge` の Exec タスクを登録し、`subprojects.collect { it.tasks.matching { it.name == "build" } }` への依存を付与して未ビルド JAR の自動ビルドを担保します。
+  - `-PdryRun`, `-PreleaseType`, `-Ploader`, `-Ptoken` 等の Gradle 引数を Python スクリプトの CLI 引数にマッピングします。
 
 ### 4.2. Architectury (common/fabric/neoforge) 環境におけるユニットテスト構成
 
@@ -178,5 +208,10 @@ Minecraft の実サーバー/クライアントエンジンを起動せずに高
 
 ### 6.2. Java 25 ツールチェーン利用時の互換性・ガード規定
 本プロジェクトでは **Java 25 (Class file major version 69.0)** の利用が必須前提条件です。
-- **コンパイル設定**: `java.toolchain.languageVersion = JavaLanguageVersion.of(25)` を指定します。
-- **ビルドツール互換性ガード**: 古いビルドプラグインや古い ASM (9.7以前) が原因で `Unsupported class file major version 69` クラッシュが発生するのを防ぐため、Fabric プロジェクトでは **Fabric Loom 1.9+**、NeoForge プロジェクトでは **ModDevGradle (`net.neoforged.moddev`)** の最新版を必ず使用してください。
+- **コンパイル設定**: `java.toolchain.languageVersion = JavaLanguageVersion.of(25)` を指定します（サブプロジェクト個別では `tasks.withType(JavaCompile).configureEach { it.options.release = 25 }`）。
+- **ビルドツール互換性ガード**: 古いビルドプラグインや古い ASM (9.7以前) が原因で `Unsupported class file major version 69` クラッシュが発生するのを防ぐため、Fabric プロジェクトでは **Fabric Loom 1.9+ (1.17-SNAPSHOT 等)**、NeoForge プロジェクトでは **ModDevGradle (`net.neoforged.moddev`)** の最新版を必ず使用してください。
+- **Minecraft 26.3 検証済みツールチェーンスタック (Reference Stack)**:
+  - **Minecraft**: `26.3`
+  - **Fabric**: Fabric Loader `0.19.5`, Fabric Loom `1.17-SNAPSHOT`, Fabric API `0.160.7+26.3`
+  - **NeoForge**: NeoForge `26.3.0.3-beta`, ModDevGradle `2.0.147`
+  - **共通**: Gradle 8.12+ / 9.x、Java 25 (`temurin` / `microsoft`)
